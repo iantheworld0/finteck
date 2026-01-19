@@ -1,3 +1,4 @@
+import 'package:fintecks/pages/charges/Charge_Det.dart';
 import 'package:fintecks/routes/app_router.dart';
 import 'package:flutter/material.dart';
 
@@ -13,8 +14,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      onGenerateRoute: _appRouter.generateRoute,
-      initialRoute: '/',
+      // onGenerateRoute: _appRouter.generateRoute,
+      // initialRoute: '/',
+      home: Charges()
     );
   }
 }
