@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'BottomSheet.dart';
 
 class Charges extends StatelessWidget {
   const Charges({super.key});
@@ -12,18 +13,20 @@ class Charges extends StatelessWidget {
           children: [
             // --- 1. HEADER (Bouton retour + Titre) ---
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 19, vertical: 16),
               child: Row(
                 children: [
                   // Bouton retour personnalisé
                   Container(
+                    width: 34,
+                    height: 34,
                     decoration: BoxDecoration(
-                      color: Colors.grey[100], // Fond gris clair
+                      color: const Color(0xFFE9F5F4), // Fond gris clair
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new, size: 18),
-                      color: const Color(0xFF004D47),
+                      icon: const Icon(Icons.arrow_back_ios_new, size: 12),
+                      color: const Color(0xFF00423C),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -47,24 +50,25 @@ class Charges extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 30),
+            // const SizedBox(height: 30),
 
             // --- 2. SECTION SOLDE ---
             const Text(
               "Total cumulé",
               style: TextStyle(
                 color: Color(0x8000423C),
+                fontWeight: FontWeight.w500,
                 fontSize: 14,
               ),
             ),
-            const SizedBox(height: 8),
+            // const SizedBox(height: 8),
             const Text.rich(
               TextSpan(
                 children: [
                   TextSpan(
                     text: "12 451 ",
                     style: TextStyle(
-                      fontSize: 36,
+                      fontSize: 40,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF00423C),
                     ),
@@ -72,7 +76,7 @@ class Charges extends StatelessWidget {
                   TextSpan(
                     text: "FCFA",
                     style: TextStyle(
-                      fontSize: 36,
+                      fontSize: 40,
                       fontWeight: FontWeight.bold,
                       color: Color(0x9900423C),
                     ),
@@ -80,18 +84,18 @@ class Charges extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            // const SizedBox(height: 20),
 
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFFE6F7D8),
+                color: const Color(0xFFE5FCC7),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image(image: AssetImage('assets/logos/chart.png'), height: 20, width: 20, color: Color(0xFF00423C)),
+                  Image(image: AssetImage('assets/logos/mdi_chart-line.png'), height: 20, width: 20, color: Color(0xFF00423C)),
                   SizedBox(width: 8),
                   Text(
                     "Analyser mes dépenses",
@@ -117,7 +121,7 @@ class Charges extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF078B7E), // Vert foncé
+                        backgroundColor: const Color(0xFF078B7E),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         shape: RoundedRectangleBorder(
@@ -125,9 +129,21 @@ class Charges extends StatelessWidget {
                         ),
                         elevation: 0,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true, // Important pour que le sheet puisse prendre de la hauteur
+                          backgroundColor: Colors.transparent, // Pour voir les coins arrondis du sheet
+                          builder: (context) => const AddChargeSheet(),
+                        );
+                      },
                       icon: const Icon(Icons.add),
-                      label: const Text("Ajouter"),
+                      label: const Text("Ajouter",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 15),
@@ -135,8 +151,8 @@ class Charges extends StatelessWidget {
                   Expanded(
                     child: TextButton.icon(
                       style: TextButton.styleFrom(
-                        backgroundColor: const Color(0xFFE0F7F6),
-                        foregroundColor: const Color(0xFF078B7E),
+                        backgroundColor: const Color(0xFFE3FFFC),
+                        foregroundColor: const Color(0x80078B7E),
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
@@ -144,8 +160,12 @@ class Charges extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {},
-                      icon: const Image(image: AssetImage('assets/logos/money hand.png'), height: 20, width: 20, color: Color(0xFF177C73)),
-                      label: const Text("Payer"),
+                      icon: const Image(image: AssetImage('assets/logos/money-hand.png'), height: 20, width: 20, color: Color(0xFF177C73)),
+                      label: const Text("Payer",
+                        style: TextStyle(
+                          color: Color(0xFF177C73),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -165,6 +185,7 @@ class Charges extends StatelessWidget {
                   style: TextStyle(
                     color: Color(0xFFAEBCBB),
                     fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
