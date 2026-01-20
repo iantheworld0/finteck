@@ -1,3 +1,4 @@
+import 'package:fintecks/data/transaction_data.dart';
 import 'package:fintecks/models/category_data.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -101,7 +102,7 @@ class _AddRevenueScreenState extends State<AddRevenueScreen> {
                       fontFamily: 'Roboto', 
                     ),
                     children: [
-                      const TextSpan(text: "676 000 "),
+                      TextSpan(text: "${totalIncome().toStringAsFixed(0)}"),
                       TextSpan(
                         text: "FCFA",
                         style: TextStyle(fontSize: 22, color: Colors.grey[500]),

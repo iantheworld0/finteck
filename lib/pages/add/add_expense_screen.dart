@@ -1,3 +1,4 @@
+import 'package:fintecks/data/transaction_data.dart';
 import 'package:fintecks/models/category_data.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -102,7 +103,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       color: darkTeal,
                     ),
                     children: [
-                      const TextSpan(text: "102 000 "),
+                      TextSpan(text: "${totalExpenses().toStringAsFixed(0)}"),
                       TextSpan(
                         text: "FCFA",
                         style: TextStyle(fontSize: 22, color: Colors.grey[500]),
