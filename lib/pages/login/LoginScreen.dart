@@ -17,7 +17,7 @@ class LoginScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 16),
 
-              // Back + logo
+              
               Row(
                 children: const [
                   Icon(Icons.arrow_back, color: Color(0xFF078B7E)),
@@ -92,7 +92,7 @@ class LoginScreen extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Already have account
+              
               Center(
                 child: TextButton(
                   onPressed: () {},

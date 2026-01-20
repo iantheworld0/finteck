@@ -14,7 +14,7 @@ class AppRouter {
       case AppRoutes.login:
         return MaterialPageRoute(builder: (_) => LoginScreen());
       case AppRoutes.home:
-        return MaterialPageRoute(builder: (_) => HomeScreen());
+        return MaterialPageRoute(builder: (_) => HomePage());
       case AppRoutes.onboarding:
         return MaterialPageRoute(builder: (_) => OnboardingScreen());
       case AppRoutes.charges:
