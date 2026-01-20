@@ -1,3 +1,4 @@
+import 'package:fintecks/routes/routes.dart';
 import 'package:flutter/material.dart';
 
 
@@ -79,7 +80,9 @@ class LoginScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context, AppRoutes.login);
+                  },
                   child: const Text(
                     "S’inscrire",
                     style: TextStyle(

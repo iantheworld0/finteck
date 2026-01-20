@@ -1,7 +1,10 @@
 import 'package:fintecks/models/transaction_model.dart';
 import 'package:fintecks/pages/charges/Charge_Det.dart';
 import 'package:fintecks/pages/home/HomeScreen.dart';
+import 'package:fintecks/pages/login/LoginScreen.dart';
 import 'package:fintecks/pages/navbotom.dart/bottomnavigationbar.dart';
+import 'package:fintecks/pages/onboarding/OnboardingScreen.dart';
+import 'package:fintecks/pages/splashpage/SplashScreen.dart';
 import 'package:fintecks/routes/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';

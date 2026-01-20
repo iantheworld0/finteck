@@ -42,7 +42,7 @@ class OnboardingScreen extends StatelessWidget {
                   flex: 4,
                   child: Center(
                     child: Image.asset(
-                      'assets/images/wa.png',
+                      'assets/images/wallet.png',
                       height: 500,
                       fit: BoxFit.contain,
                     ),

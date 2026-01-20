@@ -1,6 +1,7 @@
 import 'package:fintecks/pages/charges/Charge_Det.dart';
 import 'package:fintecks/pages/home/HomeScreen.dart';
 import 'package:fintecks/pages/login/LoginScreen.dart';
+import 'package:fintecks/pages/navbotom.dart/bottomnavigationbar.dart';
 import 'package:fintecks/pages/onboarding/OnboardingScreen.dart';
 import 'package:fintecks/pages/splashpage/SplashScreen.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => OnboardingScreen());
       case AppRoutes.charges:
         return MaterialPageRoute(builder: (_) => Charges());
+      case AppRoutes.Bottom:
+        return MaterialPageRoute(builder: (_) => Bottom());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

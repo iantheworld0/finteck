@@ -25,30 +25,26 @@ class _StatisticsPageState extends State<StatisticsPage> {
   int _selectedTimeIndex = 1; 
 
   
-
-  List<double> getChartValues(List<TransactionModel> allTransactions) {
+List<double> getChartValues(List<TransactionModel> allTransactions) {
     bool isYearView = _selectedTimeIndex == 3;
     int barCount = isYearView ? 12 : 7;
     List<double> values = List.filled(barCount, 0.0);
 
-    DateTime now = DateTime.now();
     String targetType = _selectedTabIndex == 1 ? "Revenu" : "Dépense";
 
     for (var transaction in allTransactions) {
+      
       if (transaction.type != targetType) continue;
+      
+      
+      if (!isTransactionInSelectedPeriod(transaction)) continue;
 
+      
       if (isYearView) {
-
-        if (transaction.date.year == now.year) {
-          int monthIndex = transaction.date.month - 1; 
-          values[monthIndex] += transaction.montant;
-        }
+        values[transaction.date.month - 1] += transaction.montant;
       } else {
-        DateTime transactionDate = transaction.date;
-        int diffDays = now.difference(transactionDate).inDays;
-        
-        
-        int dayIndex = transactionDate.weekday - 1; 
+       
+        int dayIndex = transaction.date.weekday - 1;
         values[dayIndex] += transaction.montant;
       }
     }
@@ -78,19 +74,21 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 padding: const EdgeInsets.only(top: 10),
                 child: Row(
                   children: [
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                        child: const Icon(Icons.arrow_back_ios_new, size: 16, color: Colors.black54),
+                  const SizedBox(width: 40),
+                  Expanded(
+                    child: Text(
+                      "Analyses",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: darkGreen,
                       ),
                     ),
-                    Expanded(
-                      child: Text("Analyses", textAlign: TextAlign.center, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: darkGreen)),
-                    ),
-                    const SizedBox(width: 40),
-                  ],
+                  ),
+                  const SizedBox(width: 40),
+                ],
+
                 ),
               ),
               
@@ -256,10 +254,46 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 ),
               ),
 
+
+
               const SizedBox(height: 20),
-              _buildCategoryItem("Transport", "3 925 FCFA", const Color(0xFF7986CB)),
-              _buildCategoryItem("Nourriture", "8 650 FCFA", const Color(0xFFFFB74D)),
-              _buildCategoryItem("Charges", "13 925 FCFA", const Color(0xFFDCE775)),
+              
+              const Text(
+                "Détails par catégorie", 
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF004D40))
+              ),
+              const SizedBox(height: 10),
+
+
+              ValueListenableBuilder(
+                valueListenable: Hive.box<TransactionModel>('transactionsBox').listenable(),
+                builder: (context, Box<TransactionModel> box, _) {
+                  
+
+                  List<Map<String, dynamic>> categoryStats = getCategoryStats(box.values.toList());
+
+                  if (categoryStats.isEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Center(child: Text("Aucune donnée pour cette période.", style: TextStyle(color: Colors.grey[500]))),
+                    );
+                  }
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(), 
+                    itemCount: categoryStats.length,
+                    itemBuilder: (context, index) {
+                      final stat = categoryStats[index];
+                      return _buildCategoryItem(
+                        stat['name'], 
+                        "${(stat['amount'] as double).toStringAsFixed(0)} FCFA", 
+                        getColorForCategory(stat['name']), 
+                      );
+                    },
+                  );
+                },
+              ),
               
               const SizedBox(height: 80),
             ],
@@ -330,6 +364,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   BarChartGroupData _makeBarGroup(int x, double y, bool isActive) {
+
+
     return BarChartGroupData(
       x: x,
       barRods: [
@@ -349,4 +385,55 @@ class _StatisticsPageState extends State<StatisticsPage> {
       ],
     );
   }
+
+
+  bool isTransactionInSelectedPeriod(TransactionModel transaction) {
+    DateTime now = DateTime.now();
+    DateTime date = transaction.date;
+
+    switch (_selectedTimeIndex) {
+      case 0:
+        return date.year == now.year && date.month == now.month && date.day == now.day;
+      case 1: 
+        return now.difference(date).inDays < 7 && now.difference(date).inDays >= 0;
+      case 2: 
+        return date.year == now.year && date.month == now.month;
+      case 3: 
+        return date.year == now.year;
+      default:
+        return false;
+    }
+  }
+
+  List<Map<String, dynamic>> getCategoryStats(List<TransactionModel> allData) {
+    Map<String, double> totals = {};
+    String targetType = _selectedTabIndex == 1 ? "Revenu" : "Dépense";
+
+    for (var tx in allData) {
+      if (tx.type == targetType && isTransactionInSelectedPeriod(tx)) {
+        totals[tx.categorie] = (totals[tx.categorie] ?? 0) + tx.montant;
+      }
+    }
+
+    List<Map<String, dynamic>> result = [];
+    totals.forEach((key, value) {
+      result.add({"name": key, "amount": value});
+    });
+
+    result.sort((a, b) => (b["amount"] as double).compareTo(a["amount"] as double));
+
+    return result;
+  }
+
+  Color getColorForCategory(String categoryName) {
+    String name = categoryName.toLowerCase();
+    if (name.contains("loyer") || name.contains("charges")) return const Color(0xFFDCE775);
+    if (name.contains("salaire")) return const Color(0xFF00695C);
+    if (name.contains("nourriture")) return const Color(0xFFFFCC80);
+    if (name.contains("transport")) return const Color(0xFF7986CB);
+    if (name.contains("santé")) return const Color(0xFF4DB6AC);
+    return Colors.grey.shade300;
+  }
+
+  
 }
