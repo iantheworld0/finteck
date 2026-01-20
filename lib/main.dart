@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       // onGenerateRoute: _appRouter.generateRoute,
       // initialRoute: '/',
-      home: Charges()
+      home: Bottom()
     );
   }
   

@@ -1,3 +1,4 @@
+import 'package:fintecks/data/transaction_data.dart';
 import 'package:fintecks/historiques/transaction_history.dart';
 import 'package:flutter/material.dart';
 
@@ -25,9 +26,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ---------------------------------------------
-              // 1. HEADER (La carte avec le solde)
-              // ---------------------------------------------
+
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -53,7 +52,7 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Ligne du haut : Avatar - Logo - Notif
+                    
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -81,72 +80,74 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 25),
-
-                    // Solde
+                    const SizedBox(height: 20),
                     Text(
                       "Balance",
                       style: TextStyle(color: Colors.grey[700], fontSize: 14),
                     ),
                     const SizedBox(height: 5),
-                    const Text(
-                      "452 375 FCFA",
-                      style: TextStyle(
+                    Text(
+                      "${totalBalance().toStringAsFixed(0)} FCFA",
+                      style: const TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF004D40), 
                       ),
                     ),
-                    const SizedBox(height: 25),
-
-                    // Blocs Revenus / Dépenses
+                    const SizedBox(height: 15),
                     Row(
                       children: [
-                        // Bloc Revenus
+                       
                         Expanded(
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                             decoration: BoxDecoration(
                               color: const Color(0xFF00A693),
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: const Column(
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
+                                const Row(
                                   children: [
                                     Icon(Icons.arrow_downward, color: Colors.white, size: 16),
                                     SizedBox(width: 5),
                                     Text("Revenus", style: TextStyle(color: Colors.white, fontSize: 12)),
                                   ],
                                 ),
-                                SizedBox(height: 5),
-                                Text("56 776", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 5),
+                                Text(
+                                 "${totalIncome().toStringAsFixed(0)}" ,
+                                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ),
                         ),
                         const SizedBox(width: 15),
-                        // Bloc Dépenses
+                        
                         Expanded(
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: const Column(
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.arrow_upward, color: Colors.grey, size: 16),
-                                    SizedBox(width: 5),
-                                    Text("Dépenses", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                                    const Icon(Icons.arrow_upward, color: Colors.grey, size: 16),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      "Dépenses",
+                                       style: const TextStyle(color: Colors.grey, fontSize: 12)),
                                   ],
                                 ),
-                                SizedBox(height: 5),
-                                Text("5 250", style: TextStyle(color: Colors.black87, fontSize: 18, fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 5),
+                                Text(
+                                  "${totalExpenses().toStringAsFixed(0)}", 
+                                  style: const TextStyle(color: Colors.black87, fontSize: 18, fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ),
@@ -157,19 +158,9 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
 
-              const SizedBox(height: 30),
-
-              // ---------------------------------------------
-              // 2. HISTORIQUE DES TRANSACTIONS (C'est ici qu'on appelle le nouveau widget)
-              // ---------------------------------------------
-              
+              const SizedBox(height: 25),           
               const TransactionHistory(), 
-
-              const SizedBox(height: 20),
-              
-              // ---------------------------------------------
-              // 3. OBJECTIFS
-              // ---------------------------------------------
+              const SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -198,7 +189,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               
-              // Espace pour scroll
+              
               const SizedBox(height: 80),
             ],
           ),
