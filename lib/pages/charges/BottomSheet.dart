@@ -8,12 +8,48 @@ class AddChargeSheet extends StatefulWidget {
 }
 
 class _AddChargeSheetState extends State<AddChargeSheet> {
-  // Equivalent de tes data() dans Vue.js
-  bool isChargesSelected = true; // Pour gérer l'onglet actif
+  // --- VARIABLES ---
+  bool isChargesSelected = true;
+  
+  final TextEditingController _libelleController = TextEditingController();
+  final TextEditingController _montantController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+
+  DateTime? _selectedDate;
+  String _selectedFrequency = "Mois"; 
+  final List<String> frequencyOptions = ["Jour", "Mois", "Année"];
+
+  // --- FONCTION DATE ---
+  Future<void> _selectDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFF004D47), 
+              onPrimary: Colors.white,
+              onSurface: Color(0xFF004D47),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+        _dateController.text = "${picked.day}/${picked.month}/${picked.year}";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // On récupère la taille du clavier pour éviter que les champs soient cachés
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
 
     return Container(
@@ -21,27 +57,20 @@ class _AddChargeSheetState extends State<AddChargeSheet> {
         top: 20,
         left: 20,
         right: 20,
-        // Ajoute du padding en bas si le clavier est ouvert, sinon 20
-        bottom: bottomPadding + 20, 
+        bottom: bottomPadding + 20,
       ),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-        border: Border(
-          top: BorderSide(
-            color: Color(0xFF00423C),
-            width: 1,
-          ),
-        ),
+        border: Border(top: BorderSide(color: Color(0xFF00423C), width: 1)),
       ),
-      // SingleChildScrollView permet de scroller si le clavier cache des champs
       child: SingleChildScrollView(
         child: Column(
-          mainAxisSize: MainAxisSize.min, // Le sheet prend juste la hauteur nécessaire
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             
-            // --- 1. LES ONGLETS (Charges / Dettes) ---
+            // --- 1. ONGLETS ---
             Container(
               height: 39,
               padding: const EdgeInsets.all(4),
@@ -51,54 +80,29 @@ class _AddChargeSheetState extends State<AddChargeSheet> {
               ),
               child: Row(
                 children: [
-                  // Onglet Charges
                   Expanded(
                     child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isChargesSelected = true;
-                        });
-                      },
+                      onTap: () => setState(() => isChargesSelected = true),
                       child: Container(
                         decoration: BoxDecoration(
-                          // Si sélectionné : Vert Lime, sinon transparent
                           color: isChargesSelected ? const Color(0xFFB2E623) : Colors.transparent,
                           borderRadius: BorderRadius.circular(25),
                         ),
                         alignment: Alignment.center,
-                        child: Text(
-                          "Charges",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF004D47),
-                            fontSize: 16,
-                          ),
-                        ),
+                        child: const Text("Charges", style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF004D47), fontSize: 16)),
                       ),
                     ),
                   ),
-                  // Onglet Dettes
                   Expanded(
                     child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isChargesSelected = false;
-                        });
-                      },
+                      onTap: () => setState(() => isChargesSelected = false),
                       child: Container(
                         decoration: BoxDecoration(
                           color: !isChargesSelected ? const Color(0xFFB2E623) : Colors.transparent,
                           borderRadius: BorderRadius.circular(25),
                         ),
                         alignment: Alignment.center,
-                        child: Text(
-                          "Dettes",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF004D47),
-                            fontSize: 16,
-                          ),
-                        ),
+                        child: const Text("Dettes", style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF004D47), fontSize: 16)),
                       ),
                     ),
                   ),
@@ -106,59 +110,122 @@ class _AddChargeSheetState extends State<AddChargeSheet> {
               ),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
 
-            // --- 2. LES CHAMPS DU FORMULAIRE ---
+            // --- 2. CHAMPS ---
             
-            // Champ Libellé
+            // Libellé
             _buildLabel("Libellé"),
-            _buildTextField(hint: "Motif (Facultatif)"),
-
-            const SizedBox(height: 10),
-
-            // Champ Montant
-            _buildLabel("Montant"),
-            _buildTextField(hint: "Montant", suffixText: "FCFA"),
-
-            const SizedBox(height: 10),
-
-            // Champ Date
-            _buildLabel("Date de début"),
-            _buildTextField(
-              hint: "Date",
-              suffixIcon: Icons.calendar_today_outlined,
+            TextField(
+              controller: _libelleController,
+              decoration: _inputDecoration("Motif (Facultatif)"),
             ),
 
             const SizedBox(height: 10),
 
-            // Champ Fréquence (Select)
+            // Montant
+            _buildLabel("Montant"),
+            TextField(
+              controller: _montantController,
+              keyboardType: TextInputType.number,
+              decoration: _inputDecoration("Montant").copyWith(
+                suffixText: "FCFA",
+                suffixStyle: const TextStyle(color: Color(0xFF004D47), fontWeight: FontWeight.bold),
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // Date
+            _buildLabel("Date de début"),
+            TextField(
+              controller: _dateController,
+              readOnly: true,
+              onTap: _selectDate,
+              decoration: _inputDecoration("Date").copyWith(
+                suffixIcon: const Icon(Icons.calendar_today_outlined, color: Color(0xFF004D47), size: 20),
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+          // --- FRÉQUENCE ---
             _buildLabel("Fréquence"),
-            _buildTextField(
-              hint: "Fréquence",
-              isDropdown: true, // Un petit flag pour changer le style du bout
+
+            Container(
+              height: 60,
+              // Padding pour le texte à gauche
+              padding: const EdgeInsets.only(left: 15, right: 10), 
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFF004D47), width: 1.2),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  // 1. Le texte sélectionné s'affichera à gauche grâce à isExpanded
+                  isExpanded: true,
+                  value: _selectedFrequency,
+                  
+                  // 2. Le style du texte à GAUCHE (la valeur choisie)
+                  style: const TextStyle(
+                    color: Colors.black87, // Couleur du texte (ex: "Mois")
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+
+                  // 3. L'icône à DROITE (On la remplace par votre bloc gris)
+                  icon: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE0E0E0), // Le fond gris
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.keyboard_arrow_down, 
+                      size: 20, 
+                      color: Color(0xFF004D47)
+                    ),
+                  ),
+
+                  // 4. La liste des options
+                  items: frequencyOptions.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+
+                  // 5. Mise à jour
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedFrequency = newValue!;
+                    });
+                  },
+                ),
+              ),
             ),
 
             const SizedBox(height: 40),
 
-            // --- 3. BOUTON AJOUTER ---
+            // --- 3. BOUTON ---
             SizedBox(
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFE0E0E0), // Gris (état désactivé visuel)
-                  foregroundColor: Colors.grey[600],
+                  backgroundColor: const Color(0xFF004D47),
+                  foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
                 onPressed: () {
-                  // Action d'ajout ici
+                  print("Ajouté: ${_libelleController.text}, Fréquence: $_selectedFrequency");
                 },
                 child: const Text(
                   "Ajouter",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -169,9 +236,8 @@ class _AddChargeSheetState extends State<AddChargeSheet> {
     );
   }
 
-  // --- Helpers (Composants réutilisables internes) ---
+  // --- Helpers ---
 
-  // Petit widget pour le titre au dessus de l'input
   Widget _buildLabel(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8, left: 4),
@@ -186,53 +252,18 @@ class _AddChargeSheetState extends State<AddChargeSheet> {
     );
   }
 
-  // Widget pour l'input (TextField)
-  Widget _buildTextField({
-    required String hint, 
-    String? suffixText, 
-    IconData? suffixIcon,
-    bool isDropdown = false,
-  }) {
-    return TextField(
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-        // Bordure normale
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF004D47), width: 1.2),
-        ),
-        // Bordure quand on clique dedans
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFFB2E623), width: 2),
-        ),
-        // Gestion de la partie droite (Suffix)
-        suffixIcon: isDropdown 
-          ? Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE0E0E0),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text("Mois", style: TextStyle(color: Color(0xFF004D47), fontSize: 12)),
-                    SizedBox(width: 4),
-                    Icon(Icons.keyboard_arrow_down, size: 16, color: Color(0xFF004D47))
-                  ],
-                ),
-              ),
-            )
-          : suffixIcon != null 
-            ? Icon(suffixIcon, color: const Color(0xFF004D47), size: 20)
-            : null,
-        suffixText: suffixText,
-        suffixStyle: const TextStyle(color: Color(0xFF004D47), fontWeight: FontWeight.bold),
+  InputDecoration _inputDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: Color(0xFF004D47), width: 1.2),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: Color(0xFFB2E623), width: 2),
       ),
     );
   }
